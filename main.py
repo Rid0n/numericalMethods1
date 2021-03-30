@@ -1,5 +1,5 @@
 #I am the fourth variant
-from math import log,sin
+from math import log,sin,copysign
 
 def getFunctionValue(x_argument):
     return log(x_argument**2)+1-sin(x_argument)
@@ -110,8 +110,80 @@ def parabolas(a,b,epsilon):
     print("Iterations: ", count)
     return u
 
-def combinedBrentMethod(func):
-    pass
+def BrentsMethod(a,c,epsilon):
+
+    fa = getFunctionValue(a)
+    fc = getFunctionValue(c)
+
+    x = (a+c)/2
+    w = x
+    v = x
+
+    fx = getFunctionValue(x)
+    fw = fx
+    fv = fx
+
+    curlen = c-a
+    prevlen = curlen
+    count = 0
+    while abs(c-a)>2*epsilon:
+        count+=1
+        flag = False
+        g = prevlen
+        prevlen = curlen
+
+        if not (x == v or x == w or fx == fv or fx == fw):
+            u = getParabolicAppMin(v,w,x,fv,fw,fx)
+
+            if a+epsilon<=u<=c-epsilon and abs(u-x) < g/2:
+                flag = True
+                if abs(u-x)<epsilon:
+                    ux = copysign(1,u-x) if u-x!=0 else 0
+                    u = x + ux*epsilon
+                curlen = abs(x-u)
+        if not flag:
+            if x<(a+c)/2:
+                u = x + 0.382*(c-x)
+                prevlen = c-x
+                curlen = u-x
+            else:
+                u = x - 0.382*(x-a)
+                prevlen = x-a
+                curlen = x-u
+
+        fu = getFunctionValue(u)
+        if fu<=fx:
+            if u>=x:
+                a=x
+            else:
+                c=x
+            v =w
+            fv = fw
+            w=x
+            fw = fx
+            x=u
+            fx=fu
+        else:
+            if u>=x:
+                c=u
+            else:
+                a=u
+            if fu <= fw or w==x:
+                v=w
+                fv=fw
+                w=u
+                fw = fu
+            elif fu<=fv or v==x or v==w:
+                v=u
+                fv=fu
+    print("Iterations: ",count)
+    return u
+   # втор знач ф-и  # парабола строится на х,омега и в , ее минимум берется как след точка, если у лежит м/д ас
+# у остаит от х не более чем на длину пред шага
+    # пред знач w ////////// а,у больше е ус
+""" если у отвергается, то след точка берется по золот сеч из меньшего из интервалов"""
+
+
 
 if __name__ == '__main__':
     print("Dichotomy")
@@ -127,6 +199,12 @@ if __name__ == '__main__':
 
     print(fibonacci(5,10,10))
     print("Parabolas")
-    print(parabolas(5,10,0.005))
+   # print(parabolas(5,10,0.05))
 
     print("Brent's Method")
+    print((BrentsMethod(5,10,0.005)))
+"""
+Остальные собрались, но
+У нас пока не пришел Брент на чай,
+    вот ждем его"""
+"""UPD: Brent has arrived in a shiny lambo"""
